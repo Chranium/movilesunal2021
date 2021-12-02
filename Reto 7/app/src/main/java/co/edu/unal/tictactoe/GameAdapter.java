@@ -53,13 +53,21 @@ public class GameAdapter extends RecyclerView.Adapter<GameAdapter.ViewHolder> {
                     Intent intent = new Intent(v.getContext(), TicTacToeActivity.class);
                     intent.putExtra("uuidPlayer", uuidPlayer);
                     intent.putExtra("keyGame", keys.get(getLayoutPosition()));
+                    String defendingPlayer = games.get(getLayoutPosition()).uuidDefendingPlayer;
+                    String challengerPlayer = games.get(getLayoutPosition()).uuidChallengingPlayer;
 
-                    if(uuidPlayer.equals(games.get(getLayoutPosition()).uuidDefendingPlayer)) {
-                        intent.putExtra("isChallengingPlayer", "false");
+                    if(uuidPlayer.equals(defendingPlayer)) {
+                        intent.putExtra("isChallengingPlayer", "0");
+                    }
+
+                    else if(challengerPlayer == null || uuidPlayer.equals(challengerPlayer))  {
+                        intent.putExtra("isChallengingPlayer", "1");
                     }
 
                     else {
-                        intent.putExtra("isChallengingPlayer", "true");
+                        intent.putExtra("isChallengingPlayer", "2");
+                        intent.putExtra("defendingPlayer", defendingPlayer);
+                        intent.putExtra("challengerPlayer", challengerPlayer);
                     }
 
                     v.getContext().startActivity(intent);

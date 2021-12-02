@@ -33,7 +33,7 @@ public class TicTacToeActivity extends AppCompatActivity {
     // Represents the internal state of the game
     private TicTacToeGame mGame;
     private boolean mGameOver = false;
-    private boolean isChallengingPlayer = false;
+    private Integer isChallengingPlayer = 0;
 
     private int mHumanWins = 0;
     private int mComputerWins = 0;
@@ -71,7 +71,7 @@ public class TicTacToeActivity extends AppCompatActivity {
             int row = (int) event.getY() / mBoardView.getBoardCellHeight();
             int pos = row * 3 + col;
 
-            if (!mGameOver && mTurn) {
+            if (!mGameOver && mTurn && isChallengingPlayer != 2) {
                 if (setMove(TicTacToeGame.HUMAN_PLAYER, pos)) {
                     buttonNewGame.setEnabled(false);
                     mGoFirst = mGoFirst == TicTacToeGame.HUMAN_PLAYER ? TicTacToeGame.COMPUTER_PLAYER : TicTacToeGame.HUMAN_PLAYER;
@@ -88,9 +88,11 @@ public class TicTacToeActivity extends AppCompatActivity {
                     mTurn = false;
 
                     if (winner == 0) {
-                        //mInfoTextView.setText(R.string.turn_computer);
-                        //turnComputer();
-                        mInfoTextView.setText("Turno del oponente");
+                        if(isChallengingPlayer != 2) {
+                            mInfoTextView.setText(R.string.turn_computer);
+                            mInfoTextView.setText("Turno del oponente");
+                            //turnComputer();
+                        }
                     } else {
                         endGame(winner);
                         gamesRef.child(keyGame).child("state").setValue("finalized");
@@ -140,9 +142,17 @@ public class TicTacToeActivity extends AppCompatActivity {
         uuidPlayer = getIntent().getStringExtra("uuidPlayer");
         keyGame = getIntent().getStringExtra("keyGame");
         String StateChallengingPlayer = getIntent().getStringExtra("isChallengingPlayer");
+        String defendingPlayer = getIntent().getStringExtra("defendingPlayer");
+        String challengerPlayer = getIntent().getStringExtra("challengerPlayer");
 
-        if(StateChallengingPlayer.equals("true")) {
-            isChallengingPlayer = true;
+        if(StateChallengingPlayer.equals("0")) {
+            isChallengingPlayer = 0;
+            mGame.HUMAN_PLAYER = 'X';
+            mGame.COMPUTER_PLAYER = 'O';
+        }
+
+        else if(StateChallengingPlayer.equals("1")) {
+            isChallengingPlayer = 1;
             mInfoTextView.setText("Turno del oponente");
             gamesRef.child(keyGame).child("uuidChallengingPlayer").setValue(uuidPlayer);
             gamesRef.child(keyGame).child("state").setValue("inprogress");
@@ -151,16 +161,18 @@ public class TicTacToeActivity extends AppCompatActivity {
             mTurn = false;
         }
 
+        else {
+            isChallengingPlayer = 2;
+            mInfoTextView.setText("--- Modo Expectador ---\n" + defendingPlayer + "(X) vs. " + challengerPlayer + "(O)");
+            mTurn = false;
+        }
+
         gamesRef.child(keyGame).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if(!mTurn) {
+                if(!mTurn || isChallengingPlayer == 2) {
                     Game game = dataSnapshot.getValue(Game.class);
-
-                    if(game.board.equals(new String(mGame.getBoardState()))) {
-                       return;
-                    }
-
+                    if(game.board.equals(new String(mGame.getBoardState()))) { return; }
                     mGame.setBoardState(game.board.toCharArray());
                     System.out.println(game.board);
 
@@ -168,17 +180,14 @@ public class TicTacToeActivity extends AppCompatActivity {
                     if (mSoundOn) {
                         try {
                             mComputerMediaPlayer.start(); // Play the sound effect
-                        } catch (Exception e) {
-                        }
-                    }
-                    int winner = mGame.checkForWinner();
-                    if (winner == 0) {
-                        mInfoTextView.setText(R.string.turn_human);
-                    } else {
-                        endGame(winner);
-
+                        } catch (Exception e) {}
                     }
 
+                    if(isChallengingPlayer != 2) {
+                        int winner = mGame.checkForWinner();
+                        if (winner == 0) { mInfoTextView.setText(R.string.turn_human); }
+                        else { endGame(winner); }
+                    }
                     mTurn = true;
                 }
             }
@@ -335,7 +344,7 @@ public class TicTacToeActivity extends AppCompatActivity {
         mGameOver = false;
         // Human goes first
 
-        if(!isChallengingPlayer) {
+        if(isChallengingPlayer == 0) {
             mInfoTextView.setText(R.string.first_human);
         }
     }
