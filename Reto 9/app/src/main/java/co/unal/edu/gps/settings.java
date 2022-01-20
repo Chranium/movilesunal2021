@@ -6,7 +6,6 @@ import android.preference.EditTextPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
-import gps.R;
 
 public class settings extends PreferenceActivity {
     @Override

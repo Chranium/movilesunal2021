@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Reto9Maps</string>
+    <string name="app_name">gps</string>
     <string name="title_activity_maps">Reto 9: GPS</string>
     <string name="radio">1000</string>
 </resources>

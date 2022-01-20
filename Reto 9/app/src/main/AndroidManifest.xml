@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="gps">
+    package="co.unal.edu.gps">
 
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
@@ -15,7 +15,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Reto9Maps">
+        android:theme="@style/Theme.Gps">
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -30,7 +30,7 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name="co.unal.edu.gps.MapsActivity"
+            android:name=".MapsActivity"
             android:exported="true"
             android:label="@string/title_activity_maps">
             <intent-filter>
@@ -44,7 +44,6 @@
             android:name="co.unal.edu.gps.settings"
             android:label="Settings">
         </activity>
-
     </application>
 
 </manifest>
